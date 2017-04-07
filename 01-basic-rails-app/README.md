@@ -18,4 +18,4 @@ Or you can probably use an existing rails app, as long as it doesn't have too ma
 
     vi Dockerfile
 
-  (esc, :set paste, command-V from: [Dockefile](01-basic-rails-app/examples/Dockerfile))
+  (esc, :set paste, command-V from: [Dockefile](../01-basic-rails-app/examples/Dockerfile))
