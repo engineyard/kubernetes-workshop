@@ -17,3 +17,4 @@ Here's overview of the pre-installed software you'll be using:
 2. *docker* - Will be needed to build and push images to Docker Hub. Kubernetes will then pull these images.
 3. *kubey* - This is the Engine Yard CLI for provisioning and managing Kubernetes clusters on Amazon. Since your cluster is already setup, you'll only need the CLI to get info/status on the cluster or to setup RDS databases.
 4. *kubectl* - This is the official kubernetes CLI, it's already setup to talk to your cluster. Here are some commands to try: `kubectl cluster-info` `kubectl get pods --all-namespaces` `kubectl describe service/nginx-ingress -n kube-system`
+5. This repository (already cloned to ~/kubernetes-workshop)
