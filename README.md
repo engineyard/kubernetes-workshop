@@ -1,4 +1,4 @@
-#Hello!
+# Hello!
 
 This repository represents all the things we wish we had time to teach you at our Railsconf workshop. However, we only have 90 minutes, so we'll just walkthrough one exercise to getting you started, and then step back and offer support as you explore the topics that interest you.
 
