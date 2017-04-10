@@ -65,17 +65,16 @@ and a route would be nice:
 
     get "/",  :to => "slash#index", :as => :slash
 
-## 1.5 Detour:
+## 1.5 Optional Detour: test run with unicorn
 
 You should be able to run your app locally with:
 
-    bundle exec rails server
+    bundle exec unicorn -p 5000
 
-If you were doing this on your local dev machine you'd pop open a browser and visit localhost:3000,
-but since you are doing this on the "bridge" box you'll need to point your browser at the amazon public hostname plus port 3000.
+If you were doing this on your local dev machine you'd pop open a browser and visit localhost:5000,
+but since you are doing this on the "bridge" box you'll need to point your browser at the amazon public hostname plus port 5000.
 
-NOTE: this will NOT work on other machines in your kubernetes cluster which have ports locked down for security reasons, we made a special exemption when we setup your "bridge"
-TODO: ^ make this true.
+NOTE: the clusters setup for this workshop have been intentionally "opened-up" to have all ports open to the world so we can debug and inspect, but this is not recommended for production.
 
 ## 2. Dockerfile
 
@@ -118,22 +117,48 @@ Here's a basic one:
     # The default command to start the Unicorn server.
     CMD bundle exec unicorn -p 5000
 
-Now let's build the image:
+Next we'll build the docker image for your app.
+
+**IMPORTANT** This is the step where you want to make sure you are not consuming conference bandwidth. If you have been developing you app locally and not the "bridge" box, now is the time to push it up there. Building and pushing docker images consumes significant bandwidth, but if we do it while SSH'd into our "bridge" box we're consuming bandwith on Amazon EC2 instead of locally.
 
 
-## 2.5 Detour:
+Connect Docker daemon to docker hub using the l:
+
+    sudo docker login
+
+Replace `jacobo` in these next few commands with your account name on Docker hub (hub.docker.com), and `myapp` with the name of your rails app.
+
+Build a docker image and tag it
+
+    sudo docker build -t jacobo/myapp .
+
+Push the tagged image to docker hub
+
+    sudo docker push jacobo/myapp
+
+## 2.5 Optional Detour: test run with docker
 
 You should be able to run your app locally inside docker with:
 
-    docker run pg-rails
-
-TODO: test this, elaborate
+    sudo docker run -d -p 5000:5000 jacobo/myapp
 
 ## 3 Deploy on Kubernetes
 
 Warning: we didn't setup the database yet, so we expect this to fail... That's ok
 
 TODO
+
+Can test with `k run`
+
+    k run -it checkurl2 --rm --image=busybox --rm
+
+    env
+    wget -qO- http://10.254.78.173
+      (because DD_NO_DB_RAILS_SERVICE_HOST=10.254.78.173)
+    wget -qO- http://dd-no-db-rails
+      (because kubedns)
+    wget -qO- http://nodbrails.jacob1.my.ey.io
+      WHY DOESN'T THIS WORK when inside a pod???
 
 ## 4 Connect to RDS
 
@@ -142,4 +167,6 @@ TODO
 ## 5 Setup a container Database and connect to that instead
 
 TODO
+
+Requires database.yml
 
