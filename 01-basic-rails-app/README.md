@@ -37,6 +37,7 @@ like a model:
 
     bundle exec rails generate model HitCounter
     cp ../kubernetes-workshop/01-basic-rails-app/snippets/hit_counter.rb app/models/hit_counter.rb
+    cp ../kubernetes-workshop/01-basic-rails-app/snippets/create_hit_counters.rb db/migrate/*_create_hit_counters.rb
 
 and a controller :
 
@@ -51,6 +52,7 @@ and a route would be nice (`vi config/routes.rb`):
 
 You should be able to run your app locally with:
 
+    bundle exec rake db:migrate
     bundle exec unicorn -p 5000
 
 If you were doing this on your local dev machine you'd pop open a browser and visit localhost:5000,
