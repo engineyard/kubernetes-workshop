@@ -3,7 +3,6 @@
 - Dockerize a Rails 5 app with Postgres
 - Deploying the app to a running kubernetes cluster
 - Connecting to externally configured Database (using Amazon RDS)
-- Connecting to a Database running on another container inside kubernetes
 - rake db:migrate
 
 ## Kubernetes concepts:
@@ -17,6 +16,7 @@
 
 - asset precompile w/ nginx serving static assets, See example: *TODO*
 - exposing your app by domain-prefix (using built-in `nginx-ingress`), See example: *TODO*
+- Connecting to a Database running on another container inside kubernetes, See example: *TODO*
 
 # Step by Step
 
@@ -35,9 +35,8 @@ Now do something that would require a database, and respond on "/". (Be creative
 
 like a model:
 
-    bundle exec rails generate model HitCounter
+    bundle exec rails generate model HitCounter hits:integer
     cp ../kubernetes-workshop/01-basic-rails-app/snippets/hit_counter.rb app/models/hit_counter.rb
-    cp ../kubernetes-workshop/01-basic-rails-app/snippets/create_hit_counters.rb db/migrate/*_create_hit_counters.rb
 
 and a controller :
 
@@ -125,31 +124,49 @@ You should be able to run your app locally inside docker with:
 
     sudo docker run -d -p 5000:5000 jacobo/myapp
 
+Needs to be torn-down, for example:
+
+    $ sudo docker ps
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+    929f6f34b1a1        jacobo/myapp        "/bin/sh -c 'bundle e"   2 minutes ago       Up 2 minutes        0.0.0.0:5000->5000/tcp   romantic_volhard
+
+    $ sudo docker kill 929f6f34b1a1
+
 ## 3 Deploy on Kubernetes
 
-Warning: we didn't setup the database yet, so we expect this to fail... That's ok
+Create a deployment:
 
-TODO
+    kubectl run myapp --image=jacobo/myapp --port 5000
 
-Can test with `k run`
+See it running, e.g.:
 
-    k run -it checkurl2 --rm --image=busybox --rm
+    $ k get pods -o wide
+    NAME                              READY     STATUS             RESTARTS   AGE       IP            NODE
+    myapp-2127871177-683h5            1/1       Running            0          29s       10.200.1.11   ip-172-20-4-152.ec2.internal
 
-    env
-    wget -qO- http://10.254.78.173
-      (because DD_NO_DB_RAILS_SERVICE_HOST=10.254.78.173)
-    wget -qO- http://dd-no-db-rails
-      (because kubedns)
-    wget -qO- http://nodbrails.jacob1.my.ey.io
-      WHY DOESN'T THIS WORK when inside a pod???
+Curl to fetch it from any node in the cluster:
+
+    curl -v 10.200.1.11:5000
+
+Expose external to the cluster:
+
+    kubectl expose deployment myapp --type=LoadBalancer --name=myapp --port=80 --target-port=5000
+
+e.g:
+
+    $ k get services -o wide
+    NAME             CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)        AGE       SELECTOR
+    kubernetes       10.254.0.1      <none>                                                                    443/TCP        6d        <none>
+    myapp            10.254.55.72    ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com   80:32237/TCP   8s        run=myapp
+
+then visit (takes about 5 minutes to provision the Elastic Load Balancer):
+
+    ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com
 
 ## 4 Connect to RDS
 
-TODO
-
-## 5 Setup a container Database and connect to that instead
+So far we've been using sqlite. If we kill the running pod, and let the deployment recreate it, the hit counter will start over back where it was when we built the docker image. (also it's running in RAILS_ENV development).
 
 TODO
 
-Requires database.yml
 
