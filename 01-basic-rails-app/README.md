@@ -26,44 +26,26 @@
 
 Or you can probably use an existing rails app. Or you can use this one: https://github.com/jacobo/pg-rails which already has these next few steps completed.
 
-We'll be using postgres as the database and unicorn as the app server, so make sure they are in your `Gemfile`:
+We'll be using postgres as the database and unicorn as the app server, so make sure they are in your Gemfile (`vi Gemfile`):
 
     gem 'pg'
     gem 'unicorn'
 
 Now do something that would require a database, and respond on "/". (Be creative, or copy directly from this example).
 
-like a model (`bundle exec rails generate model HitCounter` + `cp ../`):
+like a model:
 
-    class HitCounter < ApplicationRecord
+    bundle exec rails generate model HitCounter
+    cp ../kubernetes-workshop/01-basic-rails-app/snippets/hit_counter.rb app/models/hit_counter.rb
 
-      def self.counter
-        @counter ||= first || create!(hits: 0)
-      end
+and a controller :
 
-      def self.hit!
-        counter.update(hits: hits + 1)
-      end
+    bundle exec rails generate controller Slash
+    cp ../kubernetes-workshop/01-basic-rails-app/snippets/slash_controller.rb app/controllers/slash_controller.rb
 
-      def self.hits
-        counter.hits
-      end
+and a route would be nice (`vi config/routes.rb`):
 
-    end
-
-and a controller (`bundle exec rails generate controller Slash`):
-
-    class SlashController < ApplicationController
-
-      def index
-        HitCounter.hit!
-        render json: {"Hit Count" => HitCounter.hits}
-      end
-    end
-
-and a route would be nice:
-
-    get "/",  :to => "slash#index", :as => :slash
+    cp ../kubernetes-workshop/01-basic-rails-app/snippets/routes.rb config/routes.rb
 
 ## 1.5 Optional Detour: test run with unicorn
 
