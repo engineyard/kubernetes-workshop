@@ -33,7 +33,7 @@ We'll be using postgres as the database and unicorn as the app server, so make s
 
 Now do something that would require a database, and respond on "/". (Be creative, or copy directly from this example).
 
-like a model:
+like a model (`bundle exec rails generate model HitCounter` + `cp ../`):
 
     class HitCounter < ApplicationRecord
 
@@ -51,7 +51,7 @@ like a model:
 
     end
 
-and a controller:
+and a controller (`bundle exec rails generate controller Slash`):
 
     class SlashController < ApplicationController
 
@@ -121,18 +121,17 @@ Next we'll build the docker image for your app.
 
 **IMPORTANT** This is the step where you want to make sure you are not consuming conference bandwidth. If you have been developing you app locally and not the "bridge" box, now is the time to push it up there. Building and pushing docker images consumes significant bandwidth, but if we do it while SSH'd into our "bridge" box we're consuming bandwith on Amazon EC2 instead of locally.
 
-
-Connect Docker daemon to docker hub using the l:
+Connect Docker daemon to docker hub using the `login` command:
 
     sudo docker login
 
 Replace `jacobo` in these next few commands with your account name on Docker hub (hub.docker.com), and `myapp` with the name of your rails app.
 
-Build a docker image and tag it
+Build a docker image and tag it:
 
     sudo docker build -t jacobo/myapp .
 
-Push the tagged image to docker hub
+Push the tagged image to docker hub:
 
     sudo docker push jacobo/myapp
 
