@@ -229,11 +229,38 @@ If we load the app in a browser now (via ELB hostname) we should see an error:
 
     Missing `secret_key_base` for 'production' environment, set this value in `config/secrets.yml`
 
+Create a SECRET_KEY_BASE secret:
 
+    ruby -rsecurerandom -e "print SecureRandom.base64(100)" > skb
+    kubectl create secret generic secret-key-base --from-file=skb
+    rm skb
 
+Verify it:
 
+    $ k get secrets
+    NAME                  TYPE                                  DATA      AGE
+    secret-key-base       Opaque                                1         5s
 
+Attach the secret to the deployment, by editing and replacing the deployment:
 
+    k get deployments/myapp -o json | \
+      ruby -rjson -e "puts JSON.pretty_generate(JSON.load(STDIN.read).tap{|x|
+        x['spec']['template']['spec']['containers'].first['env'] <<
+          {name: 'SECRET_KEY_BASE', valueFrom: {secretKeyRef: {name: 'secret-key-base', key: 'skb'}}}})" | \
+            k replace -f -
+
+    $ k get pods
+    NAME                    READY     STATUS        RESTARTS   AGE
+    myapp-254138870-vmjj1   1/1       Terminating   0          19s
+    myapp-596859129-kp76n   1/1       Running       0          14s
+
+    $ k exec -it myapp-596859129-kp76n -- bash
+    $ env
+    ...
+    SECRET_KEY_BASE=yH3dBDn6YTate8FXSyhrntDwMCPitSpv0cLmqCtTF1M...
+    ...
+
+    
 
 
 ---
