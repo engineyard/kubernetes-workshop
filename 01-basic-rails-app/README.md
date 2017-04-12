@@ -101,7 +101,7 @@ Here's a basic one:
 
     # Copy code from working directory outside Docker to working directory inside Docker
     COPY . .
-    #This extra bundle call is needed to avoid
+    #This extra bundle call is needed to install unicorn-related binaries / native extensions
     RUN bundle
 
     # The default command to start the Unicorn server.
