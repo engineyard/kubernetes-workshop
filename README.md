@@ -23,7 +23,7 @@ Here's an overview of the pre-installed software you'll be using:
 
 # Getting Started
 
-The building block of this workshop is the [Basic Rails App Tutorial](01-basic-rails-app/README.md)), the rest of these examples provide avenues of exploration into other aspects of kubernetes and concerns relevant to Ruby on Rails. (e.g [Containerized Database](01-containerized-database/README.md))
+The building block of this workshop is the [Basic Rails App Tutorial](01-basic-rails-app/README.md)), the rest of these examples provide avenues of exploration into other aspects of kubernetes and concerns relevant to Ruby on Rails. (e.g [Containerized Database](02-containerized-database/README.md))
 
 # Further References
 
