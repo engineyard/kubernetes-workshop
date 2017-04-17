@@ -1,0 +1,20 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: pg-pv
+provisioner: kubernetes.io/aws-ebs
+# parameters:
+#   # Select from io1, gp2, sc1, st1. The default is gp2
+#   type: gp2
+#   # AWS zone. If not specified, the zone matching the master is used
+#   zone: us-east-1d
+#   #     Only for io1 volumes. I/O operations per second per GiB. The AWS volume plug-in
+#   # multiplies this with the size of the requested volume to compute IOPS of the volume.
+#   # The value cap is 20,000 IOPS, which is the maximum supported by AWS. See AWS
+#   # documentation for further details.
+#   iopsPerGB: "10"
+#   # Denotes whether to encrypt the EBS volume
+#   encrypted: true
+#   # (optional) The full Amazon Resource Name (ARN) of the key to use
+#   # when encrypting the volume. If none is supplied but encrypted is true, AWS generates a key
+#   kmsKeyId: keyvalue

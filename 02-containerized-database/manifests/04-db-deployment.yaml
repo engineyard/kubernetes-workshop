@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pg-for-pg-rails
+  labels:
+    app: pg-for-pg-rails #labels for the deployment
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: #labels for the pods that will be created
+        app: pg-for-pg-rails
+    spec:
+      containers:
+      - image: postgres:9
+        name: postgres #required field but seems kinda useless if we don't have multiple containers in a pod
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+          # Required for pg_isready in the health probes.
+        - name: PGUSER
+          value: postgres
+        - name: POSTGRES_DB
+          value: ""
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-db-secret
+              key: postgres-password
+        ports:
+        - name: postgresql
+          containerPort: 5432
+        volumeMounts:
+        - name: pg-volume-mount-name
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: pg-volume-mount-name
+        persistentVolumeClaim:
+          claimName: pg-pv-claim

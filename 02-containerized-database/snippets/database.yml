@@ -1,0 +1,31 @@
+# SQLite version 3.x
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
+#
+default: &default
+  adapter:  postgresql
+  host:     localhost
+
+development:
+  <<: *default
+  database: myapp_dev
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: myapp_test
+
+# RDS DB will provide a DATABASE_URL
+<% if ENV['DATABASE_URL'].blank? %>
+production:
+  # DB Service/Deployment provided by k8s will use shared secret (and become admin on the DB)
+  <<: *default
+  host: <%= ENV["DB_HOST"] %>
+  user: postgres
+  password: <%= ENV["DB_PASSWORD"] %>
+  database: myapp_prod
+<% end %>

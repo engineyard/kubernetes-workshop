@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pg-rails-service
+  labels:
+    app: pg-for-pg-rails #this label doesn't matter as much as the selector label, but it's useful for operators
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: pg-for-pg-rails
+  clusterIP: None

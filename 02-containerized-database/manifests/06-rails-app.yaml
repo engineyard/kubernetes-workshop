@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pg-rails
+  labels:
+    app: pg-rails
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pg-rails
+    spec:
+      containers:
+      - name: pg-rails
+        image: jacobo/pg-rails:latest
+        env:
+        - name: SECRET_KEY_BASE
+          value: TODO
+        - name: MY_APP_VERSION
+          value: v1 #increment this to "cheat" and get a re-deployment
+        - name: DB_HOST
+          value: pg-rails-service #works because of kubeDNS and the name we gave our DB deployments
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-db-secret
+              key: postgres-password
+        ports:
+        - containerPort: 5000
+          name: pg-rails #TODO: why do ports need names?

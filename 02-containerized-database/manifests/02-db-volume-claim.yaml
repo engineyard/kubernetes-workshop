@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pg-pv-claim
+  annotations:
+    volume.beta.kubernetes.io/storage-class: pg-pv
+spec:
+  accessModes:
+    - ReadWriteOnce #this is just what we always do on AWS...
+  resources:
+    requests:
+      storage: 20Gi
