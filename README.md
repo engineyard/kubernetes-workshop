@@ -23,4 +23,15 @@ Here's an overview of the pre-installed software you'll be using:
 
 # Getting Started
 
-We'll focus the workshop initially on the [Basic Rails App Tutorial](01-basic-rails-app/README.md)) but then...
+The building block of this workshop is the [Basic Rails App Tutorial](01-basic-rails-app/README.md)), the rest of these examples provide avenues of exploration into other aspects of kubernetes and concerns relevant to Ruby on Rails. (e.g [Containerized Database](01-containerized-database/README.md))
+
+# Further References
+
+Feel free to take advantage of the provided kubernetes cluster to explore and run through any random tutorial you find on the internet. Here's a few places you could look:
+
+* The official Kubernetes git repository examples: https://github.com/kubernetes/kubernetes/tree/master/examples
+* An FAQ from somebody doing a lot of Kubernets stuff on AWS: https://github.com/hubt/kubernetes-faq
+* A getting started on kubernetes course provided by Google: https://www.udacity.com/course/scalable-microservices-with-kubernetes--ud615
+* Some slides from a kubernetes workshop at OSCON: http://Goo.gl/eexNMT
+
+
