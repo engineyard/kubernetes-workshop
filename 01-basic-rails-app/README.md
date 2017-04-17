@@ -17,6 +17,13 @@
 - asset precompile w/ nginx serving static assets, See example: *TODO*
 - exposing your app by domain-prefix (using built-in `nginx-ingress`), See example: *TODO*
 - Connecting to a Database running on another container inside kubernetes, See example: *TODO*
+- Using kubernetes manifest files (yaml configuration files) to create deployments, services, etc...
+- Scaling up and down
+- Deploying without downtime
+- Readyness checks vs liveness checks
+- Termination grace period: https://pracucci.com/graceful-shutdown-of-kubernetes-pods.html
+- background tasks (e.g. resque) and reusing the same container
+- using tagging for a green-blue deploy
 
 # Step by Step
 
@@ -229,6 +236,8 @@ If we load the app in a browser now (via ELB hostname) we should see an error:
 
     Missing `secret_key_base` for 'production' environment, set this value in `config/secrets.yml`
 
+### secrets
+
 Create a SECRET_KEY_BASE secret:
 
     ruby -rsecurerandom -e "print SecureRandom.base64(100)" > skb
@@ -260,12 +269,53 @@ Attach the secret to the deployment, by editing and replacing the deployment:
     SECRET_KEY_BASE=yH3dBDn6YTate8FXSyhrntDwMCPitSpv0cLmqCtTF1M...
     ...
 
-    
+Now try the app again:
 
+    open http://ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com/
 
----
+Get a 500 error, but we're in `RAILS_ENV=production` now so it's not so easily visible
 
-    k get deployments/myapp -o yaml | ruby -ryaml -e 'puts YAML.load(STDIN)["spec"]["template"].inspect'
-    k get deployments/myapp -o yaml | ruby -ryaml -e 'puts YAML.load(STDIN)["spec"]["template"]["spec"]["containers"]["env"].inspect'
+We can try:
 
+    k logs myapp-596859129-kp76n
 
+But that only gives us STDOUT of the unicorn process (Which, BTW, you can improve with a config option. see: TODO)
+We can also just exec into the pod again and look at the logs:
+
+    k exec -it myapp-596859129-kp76n -- bash
+    tail -f log/production.log
+    ...
+      ActiveRecord::StatementInvalid (SQLite3::SQLException: no such table: hit_counters
+    ...
+
+So the database doesn't exist because it's still sqlite and we didn't migrate. Let's switch it to postgres by populating `DATABASE_URL`
+
+In a coming-very-soon version of the Engine Yard CLI: `kubey`, you'll be able to provision RDS databases. In the meantime, you'll have to make use of the one that's already provided.
+
+`k get secrets` should show that there's a `exampledb` secret. We can look at it's contents with a little help from ruby.
+
+`k get secret/exampledb -o yaml` shows a YAML description of the secret with an obfuscated value for `database-url`. But it's only obfuscated with Base64, so to see it's contents:
+
+    k get secret/exampledb -o yaml | ruby -ryaml -rbase64 -e "puts Base64.decode64(YAML.load(STDIN)['data']['database-url'])"
+
+TODO: could we instead use AWS CLI to fetch the root creds of the database master and then create the DB directly with a psql command?
+
+So now let's attach that secret to our cluster as DATABASE_URL
+
+    k get deployments/myapp -o json | \
+      ruby -rjson -e "puts JSON.pretty_generate(JSON.load(STDIN.read).tap{|x|
+        x['spec']['template']['spec']['containers'].first['env'] <<
+          {name: 'DATABASE_URL', valueFrom: {secretKeyRef: {name: 'exampledb', key: 'database-url'}}}})" | \
+            k replace -f -
+
+And we need to migrate (TODO: discussion about how we are waiting for k8s to implement deploy hooks)
+
+    $ k get pods
+    NAME                     READY     STATUS    RESTARTS   AGE
+    myapp-3909670473-7cpz9   1/1       Running   0          1m
+    $ k exec -it myapp-3909670473-7cpz9 -- bash
+    bundle exec rake db:migrate
+
+And now, finally, it's working, right?
+
+    open http://ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com/
