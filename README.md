@@ -21,3 +21,6 @@ Here's an overview of the pre-installed software you'll be using:
 4. *kubectl* - This is the official kubernetes CLI, it's already setup to talk to your cluster. Here are some commands to try: `kubectl cluster-info` `kubectl get pods --all-namespaces` `kubectl describe service/nginx-ingress -n kube-system`
 5. This repository (already cloned to ~/kubernetes-workshop)
 
+# Getting Started
+
+We'll focus the workshop initially on the [Basic Rails App Tutorial]((01-basic-rails-app/README.md)) but then...

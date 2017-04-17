@@ -3,7 +3,7 @@
 - Dockerize a Rails 5 app with Postgres
 - Deploying the app to a running kubernetes cluster
 - Connecting to externally configured Database (using Amazon RDS)
-- rake db:migrate
+- `rake db:migrate`
 
 ## Kubernetes concepts:
 
