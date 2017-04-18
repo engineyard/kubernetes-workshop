@@ -14,9 +14,9 @@
 
 ## Not covered (but probably of interest):
 
-- asset precompile w/ nginx serving static assets, See example: *TODO*
+- asset precompile w/ nginx serving static assets, See example: *TODO* ( `*.<account-name>.my.ey.io is CNAME'd to ELB of nginx-ingress`)
 - exposing your app by domain-prefix (using built-in `nginx-ingress`), See example: *TODO*
-- Connecting to a Database running on another container inside kubernetes, See example: *TODO*
+- Connecting to a Database running on another container inside kubernetes, See example: [Containerized Database](02-containerized-database)
 - Using kubernetes manifest files (yaml configuration files) to create deployments, services, etc...
 - Scaling up and down
 - Deploying without downtime
