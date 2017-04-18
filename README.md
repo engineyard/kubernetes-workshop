@@ -4,7 +4,7 @@ This repository represents a few of the things we wish we had time to teach you 
 
 # Prerequisites
 
-1. A Working Kubernetes Cluster. (Register for the eventbrite and we'll email you access instruction: TBD)
+1. A Working Kubernetes Cluster. (Register for the eventbrite and we'll email you access instruction: https://www.eventbrite.com/e/kubernetes-workshop-test-run-tickets-33786217486)
 2. A Docker Hub Account. (https://hub.docker.com/)
 3. Join the #workshop-chat channel on the Kubernetes slack: http://slack.k8s.io/ (optional)
 4. The ability to run SSH and a modern web browser
