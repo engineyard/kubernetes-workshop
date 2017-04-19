@@ -106,6 +106,33 @@ Or we can use the nginx-ingress (which already has an ELB attached, and a useful
 
 (FYI `get services --all-namespaces` to explore things in other namespaces)
 
+Now let's create an ingress:
+
+    echo "apiVersion: extensions/v1beta1
+    kind: Ingress
+    metadata:
+      name: k8sapp
+    spec:
+      rules:
+        #CAN use underscores but NO dashes
+        - host: k8sapp.${ENV_NAME}.my.ey.io
+          http:
+            paths:
+            - backend:
+                serviceName: k8sapp
+                servicePort: 80" | kubectl create -f -
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 TODO: put the environment name into an environment variable on bridge
