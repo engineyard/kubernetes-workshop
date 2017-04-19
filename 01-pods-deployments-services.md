@@ -30,7 +30,13 @@ When everything is up and running, pod will have an IP:
     NAME                      READY     STATUS    RESTARTS   AGE       IP           NODE
     k8sapp-1336000273-0mwsc   1/1       Running   0          3m        10.200.1.5   ip-172-20-1-239.us-west-2.compute.internal
 
-We can start a new container just for interacting:
+We can exec into the running container:
+
+    k exec -it k8sapp-1336000273-0mwsc bash
+
+    wget -qO- http://localhost:5000
+
+Or start a new container just for interacting:
 
     k run -it bashbox --image=ruby:2.3 --rm -- bash
 
@@ -39,7 +45,7 @@ And using the IP of the running Pod, we see that the app is exposed to other Pod
     wget -qO- http://10.200.1.5:5000
     seq 5 | xargs -I{} wget -qO- http://10.200.1.5:5000
 
-But we're still not exposed outside the cluster. And our IP will change if our Pod is recreated (due to deployment, scaling, etc..)
+But we're still not exposed outside the cluster. And our IP will change if our Pod is re-created (due to deployment, scaling, etc..)
 
 If we kill the pod, the replica set will re-create it
 
