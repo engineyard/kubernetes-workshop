@@ -1,3 +1,5 @@
+Show of hands: who's got experience with Docker and/or Kubernetes?
+
 Pods
 
 Replica Sets
@@ -18,9 +20,8 @@ Clusters / Nodes
 
 Secrets
 
-Volumes
-  (storage class, volume claim)
+Volumes (storage class, volume claim)
 
 Jobs
 
-Deamon Sets
+Daemon Sets

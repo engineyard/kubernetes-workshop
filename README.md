@@ -21,10 +21,6 @@ Here's an overview of the pre-installed software you'll be using:
 4. *kubectl* - This is the official kubernetes CLI, it's already setup to talk to your cluster. Here are some commands to try: `kubectl cluster-info` `kubectl get pods --all-namespaces` `kubectl describe service/nginx-ingress -n kube-system`
 5. This repository (already cloned to ~/kubernetes-workshop)
 
-# Getting Started
-
-The building block of this workshop is the [Basic Rails App Tutorial](01-basic-rails-app)), the rest of these examples provide avenues of exploration into other aspects of kubernetes and concerns relevant to Ruby on Rails. (e.g [Containerized Database](02-containerized-database))
-
 # Further References
 
 Feel free to take advantage of the provided kubernetes cluster to explore and run through any random tutorial you find on the internet. Here's a few places you could look:
@@ -36,3 +32,13 @@ Feel free to take advantage of the provided kubernetes cluster to explore and ru
 * Helm Charts: https://github.com/kubernetes/helm
 * https://kubernetes.io/docs/home/
 * 15 kubernetes features in 15 minutes: https://www.youtube.com/watch?v=o85VR90RGNQ
+
+# Topics we wanted to document/investigate more
+
+(Pull requests welcome)
+
+* SSL termination
+* Asset precompile w/ nginx serving static assets, or CDN (AWS cloudfront)
+* Readiness checks vs liveness checks, what happens when a deploy fails, rollback.
+* Termination grace period: https://pracucci.com/graceful-shutdown-of-kubernetes-pods.html
+* Background tasks (e.g. resque). Use kubernetes job OR just a regular deployment/pods? https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
