@@ -21,12 +21,12 @@ WORKDIR $INSTALL_PATH
 # Ensure gems are cached and only get updated when they change. This will
 # drastically increase build times when your gems do not change.
 COPY Gemfile Gemfile
-RUN bundle install
+RUN bundle install --deployment
 
 # Copy code from working directory outside Docker to working directory inside Docker
 COPY . .
-#This extra bundle call is needed to install unicorn-related binaries / native extensions
-RUN bundle
+#Sometime an extra bundle call is needed to install binaries / native extensions
+RUN bundle install --deployment
 
 # The default command to start the Unicorn server.
-CMD bundle exec unicorn -p 5000
+CMD bundle exec puma -p 5000

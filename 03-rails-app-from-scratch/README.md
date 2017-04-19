@@ -14,6 +14,9 @@
 
 ## Not covered (but probably of interest):
 
+These are each supposed to have a link for further reading.
+
+- The "easy" way... (this tutorial walks through setting up an app the "hard" way learning incrementally along the way, most people however will not choose the "hard" way and will instead simply maintain a set of kubernetes manifest files that get piped to `kubectl create -f`)
 - asset precompile w/ nginx serving static assets, See example: *TODO* ( `*.<account-name>.my.ey.io is CNAME'd to ELB of nginx-ingress`)
 - exposing your app by domain-prefix (using built-in `nginx-ingress`), See example: *TODO*
 - Connecting to a Database running on another container inside kubernetes, See example: [Containerized Database](02-containerized-database)
@@ -29,12 +32,13 @@
 
 ## 1. `rails new`
 
-    rails new pg-rails
+TODO: preinstall some gems?
+
+    rails new k8sapp
 
 We'll be using postgres as the database and unicorn as the app server, so make sure they are in your Gemfile (`vi Gemfile`):
 
     gem 'pg'
-    gem 'unicorn'
 
 Now do something that would require a database, and respond on "/". (Be creative, or copy directly from this example).
 
@@ -66,7 +70,7 @@ You should be able to run your app locally with:
 
     bundle
     bundle exec rake db:migrate
-    bundle exec unicorn -p 5000
+    bundle exec puma -p 5000
 
 If you were doing this on your local dev machine you'd pop open a browser and visit localhost:5000,
 but since you are doing this on the "bridge" box you'll need to point your browser at the amazon public hostname plus port 5000.
@@ -116,7 +120,7 @@ Here's a basic one:
 
 Next we'll build the docker image for your app.
 
-**IMPORTANT** This is the step where you want to make sure you are not consuming conference bandwidth. If you have been developing you app locally and not the "bridge" box, now is the time to push it up there. Building and pushing docker images consumes significant bandwidth, but if we do it while SSH'd into our "bridge" box we're consuming bandwith on Amazon EC2 instead of locally.
+**IMPORTANT** This is the step where you want to make sure you are not consuming conference bandwidth. If you have been developing your app locally and not the "bridge" box, now is the time to push it up there. Building and pushing docker images consumes significant bandwidth, but if we do it while SSH'd into our "bridge" box we're consuming bandwith on Amazon EC2 instead of locally.
 
 Connect Docker daemon to docker hub using the `login` command:
 
@@ -127,6 +131,11 @@ Replace `jacobo` in these next few commands with your account name on Docker hub
 Build a docker image and tag it:
 
     sudo docker build -t jacobo/myapp .
+
+TODO: this takes a REALLY long time the first time, what can we talk about while we wait for people to do this
+
+TODO: talk about: namespaces, tags, selectors, 
+
 
 Push the tagged image to docker hub:
 
@@ -161,6 +170,7 @@ See it running, e.g.:
 Curl to fetch it from any node in the cluster:
 
     curl -v 10.200.1.11:5000
+TODO: make this wget from inside a pod
 
 But it's still not exposed external to the cluster.
 
@@ -240,7 +250,7 @@ If we load the app in a browser now (via ELB hostname) we should see an error:
 
 Create a SECRET_KEY_BASE secret:
 
-    ruby -rsecurerandom -e "print SecureRandom.base64(100)" > skb
+    ruby -rsecurerandom -e "print SecureRandom.hex(100)" > skb
     kubectl create secret generic secret-key-base --from-file=skb
     rm skb
 
@@ -252,7 +262,7 @@ Verify it:
 
 Attach the secret to the deployment, by editing and replacing the deployment:
 
-    k get deployments/myapp -o json | \
+    k get deployments/demoapp -o json | \
       ruby -rjson -e "puts JSON.pretty_generate(JSON.load(STDIN.read).tap{|x|
         x['spec']['template']['spec']['containers'].first['env'] <<
           {name: 'SECRET_KEY_BASE', valueFrom: {secretKeyRef: {name: 'secret-key-base', key: 'skb'}}}})" | \

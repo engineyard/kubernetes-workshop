@@ -5,7 +5,7 @@ This repository represents a few of the things we wish we had time to teach you 
 # Prerequisites
 
 1. A Working Kubernetes Cluster. (Register for the eventbrite and we'll email you access instruction: https://www.eventbrite.com/e/kubernetes-workshop-test-run-tickets-33786217486)
-2. A Docker Hub Account. (https://hub.docker.com/)
+2. A Docker Hub Account. (https://hub.docker.com/) (optional)
 3. Join the #workshop-chat channel on the Kubernetes slack: http://slack.k8s.io/ (optional)
 4. The ability to run SSH and a modern web browser
 
@@ -33,5 +33,6 @@ Feel free to take advantage of the provided kubernetes cluster to explore and ru
 * An FAQ from somebody doing a lot of Kubernets stuff on AWS: https://github.com/hubt/kubernetes-faq
 * A getting started on kubernetes course provided by Google: https://www.udacity.com/course/scalable-microservices-with-kubernetes--ud615
 * Some slides from a kubernetes workshop at OSCON: http://Goo.gl/eexNMT
-
-
+* Helm Charts: https://github.com/kubernetes/helm
+* https://kubernetes.io/docs/home/
+* 15 kubernetes features in 15 minutes: https://www.youtube.com/watch?v=o85VR90RGNQ
