@@ -122,11 +122,32 @@ Now let's create an ingress:
                 serviceName: k8sapp
                 servicePort: 80" | kubectl create -f -
 
+See that the ingress was created
 
+    k get ingress
 
+Try it!
 
+    curl k8sapp.${ENV_NAME}.my.ey.io
 
+Or open in a browser
 
+    echo http://k8sapp.${ENV_NAME}.my.ey.io
+
+We are finally publicly exposed!
+
+Also maybe out load balancer has provisioned by now:
+
+    k get services -o wide
+
+    NAME         CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)        AGE       SELECTOR
+    k8sapp       10.254.221.20   <none>                                                                    80/TCP         31m       app=k8sapp
+    k8sappelb    10.254.147.68   a69c4fa4d252711e7b50a02a1fcd79f8-1821649505.us-west-2.elb.amazonaws.com   80:32592/TCP   21m       app=k8sapp
+    kubernetes   10.254.0.1      <none>                                                                    443/TCP        13h       <none>
+
+We are also exposed via ELB:
+
+    curl a69c4fa4d252711e7b50a02a1fcd79f8-1821649505.us-west-2.elb.amazonaws.com
 
 
 
