@@ -1,8 +1,8 @@
-#Pods, Deployments, Services
+# Pods, Deployments, Services
 
 Deploy a rails app to kubernetes using a Deployment. Interact with the created Pods. Scale the Deployment. Expose the app to the internet with a Service.
 
-#Steps
+# Steps
 
 Create a deployment:
 
