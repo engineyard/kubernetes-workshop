@@ -1,3 +1,9 @@
+#Pods, Deployments, Services
+
+Deploy a rails app to kubernetes using a Deployment. Interact with the created Pods. Scale the Deployment. Expose the app to the internet with a Service.
+
+#Steps
+
 Create a deployment:
 
     k run k8sapp --image=engineyard/k8sapp --port 5000 --labels="app=k8sapp"
@@ -130,7 +136,7 @@ Or open in a browser
 
 We are finally publicly exposed!
 
-Also maybe out load balancer has provisioned by now:
+Our load balancer should by provisioned by now:
 
     k get services -o wide
 
@@ -143,3 +149,16 @@ We are also exposed via ELB:
 
     curl a69c4fa4d252711e7b50a02a1fcd79f8-1821649505.us-west-2.elb.amazonaws.com
 
+
+===
+
+TODO:
+
+ubuntu@ip-172-20-3-225:~$ k get pods -l foo=bar
+NAME                      READY     STATUS    RESTARTS   AGE
+k8sapp-3607609085-b1mpg   1/1       Running   0          9m
+ubuntu@ip-172-20-3-225:~$ k get pods -l app=k8sapp
+NAME                      READY     STATUS    RESTARTS   AGE
+k8sapp-3607609085-3166x   1/1       Running   0          13m
+k8sapp-3607609085-b1mpg   1/1       Running   0          10m
+k8sapp-3607609085-p1673   1/1       Running   0          10m

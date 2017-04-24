@@ -1,3 +1,11 @@
+# Secrets and Environment Variables
+
+Set environment variable `RAILS_ENV` to production on our Rails app using `env` config.
+Set environment variable `SECRET_KEY_BASE` using a kubernetes secret.
+Connect to an externally configured RDS database connecting a pre-configured secret to `DATABASE_URL`.
+
+# Steps
+
 So far we've been using sqlite. If we kill the running pod, and let the deployment recreate it, the hit counter will start over back where it was when we built the docker image.
 
     $ seq 5 | xargs -I{} curl ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com
@@ -5,15 +13,15 @@ So far we've been using sqlite. If we kill the running pod, and let the deployme
 
     $ k get pods
     NAME                              READY     STATUS             RESTARTS   AGE
-    myapp-2127871177-pzjld            1/1       Running            0          55s
+    k8sapp-2127871177-pzjld           1/1       Running            0          55s
 
-    $ k delete pods/myapp-2127871177-pzjld
-    pod "myapp-2127871177-pzjld" deleted
+    $ k delete pods/k8sapp-2127871177-pzjld
+    pod "k8sapp-2127871177-pzjld" deleted
 
     $ k get pods
     NAME                              READY     STATUS             RESTARTS   AGE
-    myapp-2127871177-m0642            1/1       Running            0          2s
-    myapp-2127871177-pzjld            1/1       Terminating        0          1m
+    k8sapp-2127871177-m0642           1/1       Running            0          2s
+    k8sapp-2127871177-pzjld           1/1       Terminating        0          1m
 
     $ seq 5 | xargs -I{} curl ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com
     {"Hit Count":6}{"Hit Count":7}{"Hit Count":8}{"Hit Count":9}{"Hit Count":10}
@@ -22,10 +30,10 @@ We're also still running in development mode.
 
     $ k get pods
     NAME                              READY     STATUS             RESTARTS   AGE
-    myapp-2127871177-m0642            1/1       Running            0          7m
+    k8sapp-2127871177-m0642            1/1       Running            0          7m
 
-    $ k exec -it myapp-2127871177-m0642 bash
-    root@myapp-2127871177-m0642:/app# bundle exec rails c
+    $ k exec -it k8sapp-2127871177-m0642 bash
+    root@k8sapp-2127871177-m0642:/app# bundle exec rails c
     Running via Spring preloader in process 46
     Loading development environment (Rails 5.0.2)
     irb(main):001:0> Rails.env
@@ -33,19 +41,19 @@ We're also still running in development mode.
 
 ### environment variables
 
-The kubernetes `deployment` is responsible for ensuring N replicas of our `myapp` pod is running. So we can actually delete and re-create the deployment without downtime if set `--cascade=false`, this will ensure the pods are not deleted.  We'll then re-create it with environment variables.
+The kubernetes `deployment` is responsible for ensuring N replicas of our `k8sapp` pod is running. So we can actually delete and re-create the deployment without downtime if set `--cascade=false`, this will ensure the pods are not deleted.  We'll then re-create it with environment variables.
 
     $ k get deployments
     NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-    myapp     1         1         1            1           10h
+    k8sapp    1         1         1            1           10h
 
-    $ k delete deployments/myapp --cascade=false
-    deployment "myapp" deleted
+    $ k delete deployments/k8sapp --cascade=false
+    deployment "k8sapp" deleted
     $ k get pods
     NAME                     READY     STATUS    RESTARTS   AGE
-    myapp-2127871177-m0642   1/1       Running   0          51m
+    k8sapp-2127871177-m0642  1/1       Running   0          51m
 
-    $ kubectl run myapp --image=jacobo/myapp --port 5000 --env="RAILS_ENV=production"
+    $ kubectl run k8sapp --image=jacobo/k8sapp --port 5000 --env="RAILS_ENV=production"
 
 If we load the app in a browser now (via ELB hostname) we should see an error:
 
@@ -77,10 +85,10 @@ Attach the secret to the deployment, by editing and replacing the deployment:
 
     $ k get pods
     NAME                    READY     STATUS        RESTARTS   AGE
-    myapp-254138870-vmjj1   1/1       Terminating   0          19s
-    myapp-596859129-kp76n   1/1       Running       0          14s
+    k8sapp-254138870-vmjj1  1/1       Terminating   0          19s
+    k8sapp-596859129-kp76n  1/1       Running       0          14s
 
-    $ k exec -it myapp-596859129-kp76n -- bash
+    $ k exec -it k8sapp-596859129-kp76n -- bash
     $ env
     ...
     SECRET_KEY_BASE=yH3dBDn6YTate8FXSyhrntDwMCPitSpv0cLmqCtTF1M...
@@ -94,12 +102,12 @@ Get a 500 error, but we're in `RAILS_ENV=production` now so it's not so easily v
 
 We can try:
 
-    k logs myapp-596859129-kp76n
+    k logs k8sapp-596859129-kp76n
 
 But that only gives us STDOUT of the unicorn process (Which, BTW, you can improve with a config option. see: TODO)
 We can also just exec into the pod again and look at the logs:
 
-    k exec -it myapp-596859129-kp76n -- bash
+    k exec -it k8sapp-596859129-kp76n -- bash
     tail -f log/production.log
     ...
       ActiveRecord::StatementInvalid (SQLite3::SQLException: no such table: hit_counters
@@ -119,7 +127,7 @@ TODO: could we instead use AWS CLI to fetch the root creds of the database maste
 
 So now let's attach that secret to our cluster as DATABASE_URL
 
-    k get deployments/myapp -o json | \
+    k get deployments/k8sapp -o json | \
       ruby -rjson -e "puts JSON.pretty_generate(JSON.load(STDIN.read).tap{|x|
         x['spec']['template']['spec']['containers'].first['env'] <<
           {name: 'DATABASE_URL', valueFrom: {secretKeyRef: {name: 'exampledb', key: 'database-url'}}}})" | \
@@ -129,8 +137,8 @@ And we need to migrate (TODO: discussion about how we are waiting for k8s to imp
 
     $ k get pods
     NAME                     READY     STATUS    RESTARTS   AGE
-    myapp-3909670473-7cpz9   1/1       Running   0          1m
-    $ k exec -it myapp-3909670473-7cpz9 -- bash
+    k8sapp-3909670473-7cpz9  1/1       Running   0          1m
+    $ k exec -it k8sapp-3909670473-7cpz9 -- bash
     bundle exec rake db:migrate
 
 And now, finally, it's working, right?

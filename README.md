@@ -42,3 +42,4 @@ Feel free to take advantage of the provided kubernetes cluster to explore and ru
 * Readiness checks vs liveness checks, what happens when a deploy fails, rollback.
 * Termination grace period: https://pracucci.com/graceful-shutdown-of-kubernetes-pods.html
 * Background tasks (e.g. resque). Use kubernetes job OR just a regular deployment/pods? https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
+* Taking downtime for migrations. (maintenance page)
