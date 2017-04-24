@@ -4,6 +4,8 @@ Deploy a rails app to kubernetes using a Deployment. Interact with the created P
 
 # Steps
 
+## Deployment
+
 Create a deployment:
 
     k run k8sapp --image=engineyard/k8sapp --port 5000 --labels="app=k8sapp"
@@ -55,17 +57,25 @@ But we're still not exposed outside the cluster. And our IP will change if our P
 
 If we kill the pod, the replica set will re-create it
 
+## Service
+
 Create a clusterIP service
 
     k create service clusterip k8sapp --tcp=80:5000
 
-    k get services
+    k get services -o wide
 
-    NAME         CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
-    k8sapp       10.254.221.20   <none>        80/TCP    17s
-    kubernetes   10.254.0.1      <none>        443/TCP   12h
+    NAME         CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE       SELECTOR
+    k8sapp       10.254.221.20   <none>        80/TCP    6s        app=k8sapp
+    kubernetes   10.254.0.1      <none>        443/TCP   4h        <none>
 
-Now back to container just for interacting:
+List matching pods (by label)
+
+    k get pods -l app=k8sapp
+    NAME                      READY     STATUS    RESTARTS   AGE
+    k8sapp-3607609085-653nx   1/1       Running   0          3m
+
+Now back to a container just for interacting:
 
     k run -it bashbox --image=ruby:2.3 --rm -- bash
 
@@ -89,22 +99,34 @@ And we even have some environment variables
     K8SAPP_SERVICE_HOST=10.254.221.20
     K8SAPP_PORT_80_TCP_ADDR=10.254.221.20
 
-But we're still not exposed outside the cluster!
+## Ingress
 
-We need an ELB. We could provision a new one:
+We're still not exposed outside the cluster! Let's fix that.
+
+We could use an ELB. We can provision one like so:
 
     k expose deployment k8sapp --type=LoadBalancer --name=k8sappelb --port=80 --target-port=5000
 
-Or we can use the nginx-ingress (which already has an ELB attached, and a useful CNAME)
+Or we can use the nginx-ingress, which already has an ELB attached, and will allow us to share that ELB across multiple apps.
 
-    k get services/nginx-ingress -n kube-system
+    k get services/nginx-ingress -n kube-system -o wide
 
-    NAME            CLUSTER-IP       EXTERNAL-IP        PORT(S)        AGE
-    nginx-ingress   10.254.146.199   a33df536524bd...   80:31060/TCP   12h
+    NAME            CLUSTER-IP      EXTERNAL-IP                                                              PORT(S)        AGE       SELECTOR
+    nginx-ingress   10.254.178.91   a192b4016291211e78cd7023e9bf8dfa-111615484.us-east-1.elb.amazonaws.com   80:31659/TCP   4h        app=nginx-ingress
 
 (FYI `get services --all-namespaces` to explore things in other namespaces)
 
-Now let's create an ingress:
+That ELB that's already setup, also has a useful CNAME (thanks Engine Yard).
+
+    nslookup *.${ENV_NAME}.my.ey.io
+
+    ...
+    *.bukeybasha2.my.ey.io	canonical name = a192b4016291211e78cd7023e9bf8dfa-111615484.us-east-1.elb.amazonaws.com.
+    Name:	a192b4016291211e78cd7023e9bf8dfa-111615484.us-east-1.elb.amazonaws.com
+    Address: 34.197.151.80
+    ...
+
+So let's create an ingress (beware of):
 
     echo "apiVersion: extensions/v1beta1
     kind: Ingress
@@ -136,7 +158,7 @@ Or open in a browser
 
 We are finally publicly exposed!
 
-Our load balancer should by provisioned by now:
+Our load balancer should by provisioned by now too:
 
     k get services -o wide
 
@@ -149,16 +171,61 @@ We are also exposed via ELB:
 
     curl a69c4fa4d252711e7b50a02a1fcd79f8-1821649505.us-west-2.elb.amazonaws.com
 
+## Selectors & Labels
 
-===
+Scale up (and expose some more problems with our app as-configured at the moment).
 
-TODO:
+    k scale deployments/k8sapp --replicas=5
 
-ubuntu@ip-172-20-3-225:~$ k get pods -l foo=bar
-NAME                      READY     STATUS    RESTARTS   AGE
-k8sapp-3607609085-b1mpg   1/1       Running   0          9m
-ubuntu@ip-172-20-3-225:~$ k get pods -l app=k8sapp
-NAME                      READY     STATUS    RESTARTS   AGE
-k8sapp-3607609085-3166x   1/1       Running   0          13m
-k8sapp-3607609085-b1mpg   1/1       Running   0          10m
-k8sapp-3607609085-p1673   1/1       Running   0          10m
+Notice we don't have a working hit counter anymore (Hint: it wasn't working to begin with)
+
+    seq 9 | xargs -I{} curl k8sapp.${ENV_NAME}.my.ey.io
+
+    {"Hit Count":8}{"Hit Count":7}{"Hit Count":18}{"Hit Count":7}{"Hit Count":8}{"Hit Count":9}{"Hit Count":9}{"Hit Count":19}{"Hit Count":9}
+
+... Still using sqlite and Rails env development.
+
+Now's a good time for a little sidetrack into selectors and labels
+
+    k get pods
+
+    k8sapp-3607609085-653nx   1/1       Running   0          25m
+    k8sapp-3607609085-97f40   1/1       Running   0          11m
+    k8sapp-3607609085-ddf9q   1/1       Running   0          11m
+    k8sapp-3607609085-qjmhp   1/1       Running   0          11m
+    k8sapp-3607609085-v05gz   1/1       Running   0          11m
+
+    k edit pods/k8sapp-3607609085-ddf9q -o yaml
+
+Let's add the label `foo=bar`. (`vi` hint, arrow down to the `app: k8sapp` line, type `Y` to copy the line, `P` to paste it, `i` to begin editing it, `esc :wq` when you are done)
+
+    labels:
+      app: k8sapp
+      pod-template-hash: "3607609085"
+
+becomes:
+
+    labels:
+      app: k8sapp
+      foo: bar
+      pod-template-hash: "3607609085"
+
+And let's do the same with the service:
+
+    k edit services/k8sapp
+
+    selector:
+      app: k8sapp
+
+becomes
+
+    selector:
+      foo: bar
+
+Now our service is only hitting that 1 pod
+
+    seq 9 | xargs -I{} curl k8sapp.${ENV_NAME}.my.ey.io
+
+    {"Hit Count":10}{"Hit Count":11}{"Hit Count":12}{"Hit Count":13}{"Hit Count":14}{"Hit Count":15}{"Hit Count":16}{"Hit Count":17}{"Hit Count":18}
+
+Undo our little hacks before the next section

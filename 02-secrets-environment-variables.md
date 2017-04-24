@@ -144,3 +144,17 @@ And we need to migrate (TODO: discussion about how we are waiting for k8s to imp
 And now, finally, it's working, right?
 
     open http://ae036ae591e7611e782cc0add41e3562-1667221753.us-east-1.elb.amazonaws.com/
+
+## proxy / ui
+
+    k proxy
+
+Is a useful little UI we can serve up. It kinda assumes you are running `kubectl` locally and not this weird bridge box setup.
+
+Workaround:
+
+    k proxy --address='0.0.0.0' --disable-filter=true
+
+And to get the public hostname of our bridge box (output you can paste into a web browser)
+
+    echo $(curl -s http://169.254.169.254/latest/meta-data/public-hostname):8001
