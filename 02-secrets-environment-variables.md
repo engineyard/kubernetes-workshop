@@ -53,7 +53,7 @@ The kubernetes `deployment` is responsible for ensuring N replicas of our `k8sap
     NAME                     READY     STATUS    RESTARTS   AGE
     k8sapp-2127871177-m0642  1/1       Running   0          51m
 
-    $ kubectl run k8sapp --image=jacobo/k8sapp --port 5000 --env="RAILS_ENV=production"
+    $ kubectl run k8sapp --image=engineyard/k8sapp --port 5000 --env="RAILS_ENV=production"
 
 If we load the app in a browser now (via ELB hostname) we should see an error:
 
