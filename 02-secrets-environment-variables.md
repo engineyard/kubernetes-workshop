@@ -141,7 +141,7 @@ So now let's attach that secret to our cluster as DATABASE_URL
           {name: 'DATABASE_URL', valueFrom: {secretKeyRef: {name: 'exampledb', key: 'database-url'}}}})" | \
             k replace -f -
 
-And we need to migrate (TODO: discussion about how we are waiting for k8s to implement deploy hooks)
+And we need to migrate (I'm afraid the solution is rather "manual" at the moment)
 
     $ k get pods
     NAME                     READY     STATUS    RESTARTS   AGE
