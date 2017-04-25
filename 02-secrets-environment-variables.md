@@ -87,7 +87,7 @@ Verify it:
 
 Attach the secret to the deployment, by editing and replacing the deployment:
 
-    k get deployments/demoapp -o json | \
+    k get deployments/k8sapp -o json | \
       ruby -rjson -e "puts JSON.pretty_generate(JSON.load(STDIN.read).tap{|x|
         x['spec']['template']['spec']['containers'].first['env'] <<
           {name: 'SECRET_KEY_BASE', valueFrom: {secretKeyRef: {name: 'secret-key-base', key: 'skb'}}}})" | \
