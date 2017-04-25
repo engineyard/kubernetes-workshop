@@ -2463,7 +2463,7 @@ Node}</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>NO</string>
+			<string>YES</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
@@ -2471,9 +2471,9 @@ Node}</string>
 			<key>Name</key>
 			<string>Ingress</string>
 			<key>Print</key>
-			<string>YES</string>
-			<key>View</key>
 			<string>NO</string>
+			<key>View</key>
+			<string>YES</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
@@ -2578,7 +2578,7 @@ Node}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2017-04-25 18:48:48 +0000</string>
+	<string>2017-04-25 20:48:38 +0000</string>
 	<key>Modifier</key>
 	<string>Jacob</string>
 	<key>NotesVisible</key>
@@ -2664,7 +2664,7 @@ Node}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{72, 166}, {993, 711}}</string>
+		<string>{{1461, 166}, {993, 711}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>

@@ -53,7 +53,7 @@ The kubernetes `deployment` is responsible for ensuring N replicas of our `k8sap
     NAME                     READY     STATUS    RESTARTS   AGE
     k8sapp-2127871177-m0642  1/1       Running   0          51m
 
-    $ kubectl run k8sapp --image=jacobo/k8sapp --port 5000 --env="RAILS_ENV=production"
+    $ kubectl run k8sapp --image=jacobo/k8sapp --port 5000 --env="RAILS_ENV=production" --labels="app=k8sapp"
 
 If we load the app in a browser now (via ELB hostname) we should see an error:
 
@@ -87,7 +87,7 @@ Verify it:
 
 Attach the secret to the deployment, by editing and replacing the deployment:
 
-    k get deployments/demoapp -o json | \
+    k get deployments/k8sapp -o json | \
       ruby -rjson -e "puts JSON.pretty_generate(JSON.load(STDIN.read).tap{|x|
         x['spec']['template']['spec']['containers'].first['env'] <<
           {name: 'SECRET_KEY_BASE', valueFrom: {secretKeyRef: {name: 'secret-key-base', key: 'skb'}}}})" | \
