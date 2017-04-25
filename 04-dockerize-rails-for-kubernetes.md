@@ -59,7 +59,7 @@ Our app will run inside a container, so we need a Dockerfile that defines how to
 
     vi Dockerfile
 
-Here's a basic one:
+Here's a starting point:
 
     #The base image, with ruby pre-installed
     #see: https://hub.docker.com/_/ruby/
@@ -117,10 +117,6 @@ Build a docker image and tag it:
 
     docker build -t jacobo/myapp .
 
-TODO: this takes a REALLY long time the first time, what can we talk about while we wait for people to do this
-
-TODO: talk about: namespaces, tags, selectors, 
-
 
 Push the tagged image to docker hub:
 
@@ -142,7 +138,7 @@ Needs to be torn-down, for example:
 
 ## 3 Deploy on Kubernetes
 
-Create a deployment:
+Create a deployment (specify your own app name and your own image):
 
     kubectl run myapp --image=jacobo/myapp --port 5000
 

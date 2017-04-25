@@ -18,15 +18,24 @@ RUN mkdir -p $INSTALL_PATH
 # on Docker's website extensively.
 WORKDIR $INSTALL_PATH
 
+# (optional/recommended) Environment variables for Dockerized production Rails apps
+# ENV RAILS_ENV production
+# ENV RAILS_SERVE_STATIC_FILES true
+# ENV RAILS_LOG_TO_STDOUT true
+
 # Ensure gems are cached and only get updated when they change. This will
 # drastically increase build times when your gems do not change.
 COPY Gemfile Gemfile
+COPY Gemfile.lock Gemfile.lock
 RUN bundle install --deployment
 
 # Copy code from working directory outside Docker to working directory inside Docker
 COPY . .
 #Sometime an extra bundle call is needed to install binaries / native extensions
 RUN bundle install --deployment
+
+# Precompile assets
+RUN bundle exec rake DATABASE_URL=postgresql:does_not_exist assets:precompile
 
 # The default command to start the Unicorn server.
 CMD bundle exec puma -p 5000

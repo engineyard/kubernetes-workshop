@@ -61,6 +61,16 @@ If we load the app in a browser now (via ELB hostname) we should see an error:
 
     Missing `secret_key_base` for 'production' environment, set this value in `config/secrets.yml`
 
+### Other environment variables to consider setting
+
+Tell rails to serve static assest (since we haven't setup nginx or CDN to serve them)
+
+    RAILS_SERVE_STATIC_FILES=true
+
+Tell rails to output all logs to STDOUT instead of log files (so we can use `k logs`)
+
+    RAILS_LOG_TO_STDOUT=true
+
 ### secrets
 
 Create a SECRET_KEY_BASE secret:
@@ -104,7 +114,7 @@ We can try:
 
     k logs k8sapp-596859129-kp76n
 
-But that only gives us STDOUT of the unicorn process (Which, BTW, you can improve with a config option. see: TODO)
+But that only gives us STDOUT of the puma process (unless `RAILS_LOG_TO_STDOUT` is set)
 We can also just exec into the pod again and look at the logs:
 
     k exec -it k8sapp-596859129-kp76n -- bash
@@ -122,8 +132,6 @@ In a coming-very-soon version of the Engine Yard CLI: `kubey`, you'll be able to
 `k get secret/exampledb -o yaml` shows a YAML description of the secret with an obfuscated value for `database-url`. But it's only obfuscated with Base64, so to see it's contents:
 
     k get secret/exampledb -o yaml | ruby -ryaml -rbase64 -e "puts Base64.decode64(YAML.load(STDIN)['data']['database-url'])"
-
-TODO: could we instead use AWS CLI to fetch the root creds of the database master and then create the DB directly with a psql command?
 
 So now let's attach that secret to our cluster as DATABASE_URL
 
