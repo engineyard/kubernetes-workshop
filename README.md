@@ -1,8 +1,8 @@
 # Hello!
 
-Welcome to our Railsconf workshop repository. We'll walkthrough the [Setup](TODO) and 2 exercises together, with you following along on your own kubernetes cluster. ( [Pods & Services](TODO/01-pods-deployments-services.md) and  [Secrets & Environment Variables](TODO/02-secrets-environment-variables.md) ) Then we'll step back and offer support as you explore on your own.
+Welcome to our Railsconf workshop repository. We'll walkthrough the [Setup](TODO) and 2 exercises together, with you following along on your own kubernetes cluster. ([Pods & Services](blob/master/01-pods-deployments-services.md) and  [Secrets & Environment Variables](blob/master/02-secrets-environment-variables.md)) Then we'll step back and offer support as you explore on your own.
 
-You can walkthrough the [Volumes](TODO) exercise to deploy a containerized database, go straight into [Dockerizing an App](TODO) (and deploy it on kubernetes), OR investigate other topics (such as the [Topics warranting further investigation](#TODO) at the bottom of this file). If you discover something cool, please share! (in workshop chat, or via spontaneous euphoric vocal exclamation)
+You can walkthrough the [Volumes](blob/master/03-volumes.md) exercise to deploy a containerized database, go straight into [Dockerizing an App](blob/master/04-dockerize-rails-for-kubernetes.md) (and deploy it on kubernetes), OR investigate other topics (such as the [Topics warranting further investigation](#topics-warranting-further-investigation) at the bottom of this file). If you discover something cool, please share! (in workshop chat, or via spontaneous euphoric vocal exclamation)
 
 # Prerequisites
 
