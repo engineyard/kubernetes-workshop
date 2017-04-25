@@ -43,17 +43,21 @@ We're also still running in development mode.
 
 The kubernetes `deployment` is responsible for ensuring N replicas of our `k8sapp` pod is running. So we can actually delete and re-create the deployment without downtime if set `--cascade=false`, this will ensure the pods are not deleted.  We'll then re-create it with environment variables.
 
-    $ k get deployments
+    k get deployments
+
     NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
     k8sapp    1         1         1            1           10h
 
-    $ k delete deployments/k8sapp --cascade=false
+    k delete deployments/k8sapp --cascade=false
+
     deployment "k8sapp" deleted
-    $ k get pods
+
+    k get pods
+
     NAME                     READY     STATUS    RESTARTS   AGE
     k8sapp-2127871177-m0642  1/1       Running   0          51m
 
-    $ kubectl run k8sapp --image=jacobo/k8sapp --port 5000 --env="RAILS_ENV=production" --labels="app=k8sapp"
+    k run k8sapp --image=engineyard/k8sapp --port 5000 --env="RAILS_ENV=production" --labels="app=k8sapp"
 
 If we load the app in a browser now (via ELB hostname) we should see an error:
 
@@ -93,13 +97,13 @@ Attach the secret to the deployment, by editing and replacing the deployment:
           {name: 'SECRET_KEY_BASE', valueFrom: {secretKeyRef: {name: 'secret-key-base', key: 'skb'}}}})" | \
             k replace -f -
 
-    $ k get pods
+    k get pods
     NAME                    READY     STATUS        RESTARTS   AGE
     k8sapp-254138870-vmjj1  1/1       Terminating   0          19s
     k8sapp-596859129-kp76n  1/1       Running       0          14s
 
-    $ k exec -it k8sapp-596859129-kp76n -- bash
-    $ env
+    k exec -it k8sapp-596859129-kp76n -- bash
+    env
     ...
     SECRET_KEY_BASE=yH3dBDn6YTate8FXSyhrntDwMCPitSpv0cLmqCtTF1M...
     ...
