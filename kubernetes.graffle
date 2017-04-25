@@ -2457,73 +2457,73 @@ Node}</string>
 	<array>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>ingress connected</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>Ingress</string>
 			<key>Print</key>
-			<string>NO</string>
-			<key>View</key>
 			<string>YES</string>
+			<key>View</key>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>direct (hide me)</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>Services</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>Label/Selector</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>Deployment</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>NO</string>
+			<string>YES</string>
 			<key>Name</key>
 			<string>Replica</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
@@ -2533,7 +2533,7 @@ Node}</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
@@ -2543,7 +2543,7 @@ Node}</string>
 			<key>Print</key>
 			<string>YES</string>
 			<key>View</key>
-			<string>YES</string>
+			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Lock</key>
@@ -2578,7 +2578,7 @@ Node}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2017-04-24 23:49:43 +0000</string>
+	<string>2017-04-25 00:31:45 +0000</string>
 	<key>Modifier</key>
 	<string>Jacob</string>
 	<key>NotesVisible</key>
